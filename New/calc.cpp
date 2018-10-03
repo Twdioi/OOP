@@ -56,7 +56,7 @@ Calculator::Calculator(QWidget *parent)
     Button *tan = createButton(tr("tan"), SLOT(trigonometricClicked()));
     Button *cos = createButton(tr("cos"), SLOT(trigonometricClicked()));
 
-    Button *history = createButton(tr("history"), SLOT(history()));
+    Button *history = createButton(tr("history"), SLOT(historyClick()));
 
     QGridLayout *mainLayout = new QGridLayout; //выравнивание виджетов по сетке
     mainLayout->setSizeConstraint(QLayout::SetFixedSize); //режим изменения размера комп., виджет всегда выводится на экран с оптимальными размерами
@@ -103,7 +103,7 @@ Calculator::Calculator(QWidget *parent)
 void Calculator::digitClicked()
 {
     Button *clickedButton = qobject_cast<Button *>(sender()); //узнаем какая кнопка отправила сигнал
-    int digitValue = clickedButton->text().toInt();//счит значение
+    int digitValue = clickedButton->text().toInt();//считывает значение
     if (display->text() == "0" && digitValue == 0.0)
         return;
 
@@ -114,9 +114,10 @@ void Calculator::digitClicked()
     display->setText(display->text() + QString::number(digitValue)); // + новая цифра на экран
 }
 
-void Calculator::history()
+void Calculator::historyClick()
 {
- history();
+ h->his();
+ //h->getwindow()->show();
 }
 
 void Calculator::oneClickOperator()
@@ -157,7 +158,11 @@ void Calculator::trigonometricClicked()
     double result = 0.0;
 
     if (clickedOperator == tr("sin")){
-        result = sin(operand * 3.14159265 / 180);}
+        double s = sin(operand * 3.14159265 / 180);
+        h->getjurnal()->setText(h->getjurnal()->text() + "sin(" + QString::number(operand) + ") = " + QString::number(s) + "\n");
+        result = s;
+
+        }
     else if (clickedOperator == tr("tan")){
                 result = tan(operand * 3.14159265 / 180);}
 

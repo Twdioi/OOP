@@ -2,6 +2,8 @@
 #define HISTORY_H
 
 #include <QWidget>
+#include <QLabel>
+#include <QVBoxLayout>
 
 class QLineEdit;
 
@@ -13,9 +15,15 @@ class history : public QWidget
 
 public:
     history(QWidget *parent = 0);
+    history();
     void his();
+    QLabel *getjurnal();
+    QWidget *getwindow();
 private:
-    QLineEdit *disp;
+    //QLineEdit *disp;
+    QWidget *window;
+    QLabel *jurnal;
+    QVBoxLayout *layoyt;
 };
 
 #endif // HISTORY_H

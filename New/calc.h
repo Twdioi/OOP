@@ -4,6 +4,8 @@
 #include <QWidget>
 #include "history.h"
 
+class history;
+
 class QLineEdit;
 
 class Button;
@@ -28,8 +30,7 @@ private slots:
     void clearAll();
     void trigonometricClicked();
 
-    void history();
-    //void LnExpClicked();
+    void historyClick();
    // void clearMemory();
 //    void readMemory();
 //    void setMemory();
@@ -53,8 +54,7 @@ private:
     bool waitingForOperand;// равен true когда калькулятор ожидает начала набора пользователем операнда.
 
     QLineEdit *display;
-
-    //history *h;
+    history *h;
 
     enum { NumDigitButtons = 10 };//цифры
     Button *digitButtons[NumDigitButtons];//кнопки
