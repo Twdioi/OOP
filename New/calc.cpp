@@ -4,15 +4,14 @@
 
 #include "button.h"
 #include "calc.h"
+#include "history.h"
 
 Calculator::Calculator(QWidget *parent)
     : QWidget(parent)
 {
     sumInMemory = 0.0;
-    sumSoFar = 0.0;//сохраняет суммарное значение всех
-    //вводимых значений. Когда пользователь щелкает по =,
-    //sumSoFar перерассчитывается и отображается на экране.
-    //Clear All сбрасывает значение sumSoFar в ноль.
+    sumSoFar = 0.0;//сохраняет суммарное значение всех вводимых значений. Когда пользователь щелкает по =,
+    //sumSoFar перерассчитывается и отображается на экране. Clear All сбрасывает значение sumSoFar в ноль.
     factorSoFar = 0.0; // сохраняет временное значение при выполнении умножений и делений
     waitingForOperand = true; // равен true когда калькулятор ожидает начала набора пользователем операнда.
 
@@ -33,7 +32,7 @@ Calculator::Calculator(QWidget *parent)
     Button *changeSignButton = createButton(tr("\302\261"), SLOT(changeSignClicked()));
 
     Button *backspaceButton = createButton(tr("Backspace"), SLOT(backspaceClicked()));
-    Button *clearButton = createButton(tr("Clear"), SLOT(clear()));
+    //Button *clearButton = createButton(tr("Clear"), SLOT(clear()));
     Button *clearAllButton = createButton(tr("Clear All"), SLOT(clearAll()));
 
 //    Button *clearMemoryButton = createButton(tr("MC"), SLOT(clearMemory()));
@@ -41,15 +40,23 @@ Calculator::Calculator(QWidget *parent)
 //    Button *setMemoryButton = createButton(tr("MS"), SLOT(setMemory()));
 //    Button *addToMemoryButton = createButton(tr("M+"), SLOT(addToMemory()));
 
-    Button *divisionButton = createButton(tr("\303\267"), SLOT(multiplicativeOperatorClicked()));
-    Button *timesButton = createButton(tr("\303\227"), SLOT(multiplicativeOperatorClicked()));
-    Button *minusButton = createButton(tr("-"), SLOT(additiveOperatorClicked()));
-    Button *plusButton = createButton(tr("+"), SLOT(additiveOperatorClicked()));
+    Button *division = createButton(tr("/"), SLOT(multiplicativeOperatorClicked()));
+    Button *multiplication = createButton(tr("*"), SLOT(multiplicativeOperatorClicked()));
+    Button *minus = createButton(tr("-"), SLOT(additiveOperatorClicked()));
+    Button *plus = createButton(tr("+"), SLOT(additiveOperatorClicked()));
 
-    Button *squareRootButton = createButton(tr("Sqrt"), SLOT(unaryOperatorClicked()));
-    Button *powerButton = createButton(tr("x^2"), SLOT(unaryOperatorClicked()));
-    Button *reciprocalButton = createButton(tr("1/x"), SLOT(unaryOperatorClicked()));
-    Button *equalButton = createButton(tr("="), SLOT(equalClicked()));
+    Button *square = createButton(tr("Sqrt"), SLOT(oneClickOperator()));
+    Button *power = createButton(tr("x^2"), SLOT(oneClickOperator()));
+    Button *equal = createButton(tr("="), SLOT(equalClicked()));
+
+    Button *ln = createButton(tr("ln"), SLOT(oneClickOperator()));
+    Button *exp = createButton(tr("exp"), SLOT(oneClickOperator()));
+
+    Button *sin = createButton(tr("sin"), SLOT(trigonometricClicked()));
+    Button *tan = createButton(tr("tan"), SLOT(trigonometricClicked()));
+    Button *cos = createButton(tr("cos"), SLOT(trigonometricClicked()));
+
+    Button *history = createButton(tr("history"), SLOT(history()));
 
     QGridLayout *mainLayout = new QGridLayout; //выравнивание виджетов по сетке
     mainLayout->setSizeConstraint(QLayout::SetFixedSize); //режим изменения размера комп., виджет всегда выводится на экран с оптимальными размерами
@@ -58,13 +65,15 @@ Calculator::Calculator(QWidget *parent)
     //растягивая его на несколько строк/столбцов.
     //Начальная ячейка (row, column) растягивается на rowSpan строк и columnSpan столбцов.
     mainLayout->addWidget(backspaceButton, 1, 0, 1, 2);
-    mainLayout->addWidget(clearButton, 1, 2, 1, 2);
+
+    mainLayout->addWidget(history, 1, 2, 1, 2);
+
     mainLayout->addWidget(clearAllButton, 1, 4, 1, 2);
 
-   // mainLayout->addWidget(clearMemoryButton, 2, 0);
-   // mainLayout->addWidget(readMemoryButton, 3, 0);
-   // mainLayout->addWidget(setMemoryButton, 4, 0);
-//    mainLayout->addWidget(addToMemoryButton, 5, 0);
+    mainLayout->addWidget(exp, 2, 0);
+    mainLayout->addWidget(sin, 3, 0);
+    mainLayout->addWidget(cos, 4, 0);
+    mainLayout->addWidget(tan, 5, 0);
 
     for (int i = 1; i < NumDigitButtons; ++i) {
         int row = ((9 - i) / 3) + 2;
@@ -76,15 +85,16 @@ Calculator::Calculator(QWidget *parent)
     mainLayout->addWidget(pointButton, 5, 2);
     mainLayout->addWidget(changeSignButton, 5, 3);
 
-    mainLayout->addWidget(divisionButton, 2, 4);
-    mainLayout->addWidget(timesButton, 3, 4);
-    mainLayout->addWidget(minusButton, 4, 4);
-    mainLayout->addWidget(plusButton, 5, 4);
+    mainLayout->addWidget(division, 2, 4);
+    mainLayout->addWidget(multiplication, 3, 4);
+    mainLayout->addWidget(minus, 4, 4);
+    mainLayout->addWidget(plus, 5, 4);
 
-    mainLayout->addWidget(squareRootButton, 2, 5);
-    mainLayout->addWidget(powerButton, 3, 5);
-    mainLayout->addWidget(reciprocalButton, 4, 5);
-    mainLayout->addWidget(equalButton, 5, 5);
+    mainLayout->addWidget(square, 2, 5);
+    mainLayout->addWidget(power, 3, 5);
+   // mainLayout->addWidget(reciprocalButton, 4, 5);
+    mainLayout->addWidget(ln, 4, 5);
+    mainLayout->addWidget(equal, 5, 5);
     setLayout(mainLayout);
 
     setWindowTitle(tr("Calculator"));
@@ -104,7 +114,12 @@ void Calculator::digitClicked()
     display->setText(display->text() + QString::number(digitValue)); // + новая цифра на экран
 }
 
-void Calculator::unaryOperatorClicked()
+void Calculator::history()
+{
+ history();
+}
+
+void Calculator::oneClickOperator()
 {
     Button *clickedButton = qobject_cast<Button *>(sender());
     QString clickedOperator = clickedButton->text();
@@ -119,16 +134,41 @@ void Calculator::unaryOperatorClicked()
         result = std::sqrt(operand);
     } else if (clickedOperator == tr("x^2")) {
         result = std::pow(operand, 2.0);
-    } else if (clickedOperator == tr("1/x")) { //заменить на LN
+    } else if (clickedOperator == tr("ln")) {
         if (operand == 0.0) {
             abortOperation();
             return;
         }
-        result = 1.0 / operand;
+        result =log(operand);
+    } else if (clickedOperator == tr("exp")){
+        result = exp(operand);
     }
     display->setText(QString::number(result));
     waitingForOperand = true; // //цифра рассматривается как новый операнд
 }
+
+
+
+void Calculator::trigonometricClicked()
+{
+    Button *clickedButton = qobject_cast<Button *>(sender());
+    QString clickedOperator = clickedButton->text();
+    double operand = display->text().toDouble();
+    double result = 0.0;
+
+    if (clickedOperator == tr("sin")){
+        result = sin(operand * 3.14159265 / 180);}
+    else if (clickedOperator == tr("tan")){
+                result = tan(operand * 3.14159265 / 180);}
+
+    else if (clickedOperator == tr("cos")){
+       result = cos(operand * 3.14159265 / 180);}
+
+    display->setText(QString::number(result));
+    waitingForOperand = true; // //цифра рассматривается как новый операнд
+}
+
+
 
 void Calculator::additiveOperatorClicked() //плюс минус
 {
@@ -147,8 +187,8 @@ void Calculator::additiveOperatorClicked() //плюс минус
         pendingMultiplicativeOperator.clear();
     }
 
-    if (!pendingAdditiveOperator.isEmpty()) {
-        if (!calculate(operand, pendingAdditiveOperator)) {
+    if (!AdditiveOperator.isEmpty()) {
+        if (!calculate(operand, AdditiveOperator)) {
             abortOperation();
             return;
         }
@@ -157,7 +197,7 @@ void Calculator::additiveOperatorClicked() //плюс минус
         sumSoFar = operand;
     }
 
-    pendingAdditiveOperator = clickedOperator; //запоминает какой операнд нажат
+    AdditiveOperator = clickedOperator; //запоминает какой операнд нажат
     waitingForOperand = true;
 }
 
@@ -194,12 +234,12 @@ void Calculator::equalClicked()
         factorSoFar = 0.0;
         pendingMultiplicativeOperator.clear();
     }
-    if (!pendingAdditiveOperator.isEmpty()) {
-        if (!calculate(operand, pendingAdditiveOperator)) {
+    if (!AdditiveOperator.isEmpty()) {
+        if (!calculate(operand, AdditiveOperator)) {
             abortOperation();
             return;
         }
-        pendingAdditiveOperator.clear();
+        AdditiveOperator.clear();
     } else {
         sumSoFar = operand;
     }
@@ -258,7 +298,7 @@ void Calculator::clearAll()
 {
     sumSoFar = 0.0;
     factorSoFar = 0.0;
-    pendingAdditiveOperator.clear();
+    AdditiveOperator.clear();
     pendingMultiplicativeOperator.clear();
     display->setText("0");
     waitingForOperand = true;
@@ -306,9 +346,9 @@ bool Calculator::calculate(double rightOperand, const QString &pendingOperator)
         sumSoFar += rightOperand;
     } else if (pendingOperator == tr("-")) {
         sumSoFar -= rightOperand;
-    } else if (pendingOperator == tr("\303\227")) {
+    } else if (pendingOperator == tr("*")) {
         factorSoFar *= rightOperand;
-    } else if (pendingOperator == tr("\303\267")) {
+    } else if (pendingOperator == tr("/")) {
         if (rightOperand == 0.0)
             return false;
         factorSoFar /= rightOperand;

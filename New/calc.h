@@ -2,6 +2,7 @@
 #define CALCULATOR_H
 
 #include <QWidget>
+#include "history.h"
 
 class QLineEdit;
 
@@ -16,7 +17,7 @@ public:
 
 private slots:
     void digitClicked();
-    void unaryOperatorClicked();
+    void oneClickOperator();
     void additiveOperatorClicked();
     void multiplicativeOperatorClicked();
     void equalClicked();
@@ -25,6 +26,10 @@ private slots:
     void backspaceClicked();
     void clear();
     void clearAll();
+    void trigonometricClicked();
+
+    void history();
+    //void LnExpClicked();
    // void clearMemory();
 //    void readMemory();
 //    void setMemory();
@@ -43,11 +48,13 @@ private:
     //Clear All сбрасывает значение sumSoFar в ноль.
 
     double factorSoFar; // сохраняет временное значение при выполнении умножений и делений
-    QString pendingAdditiveOperator;//сохраняет последний аддитивный оператор, по которому щелкнул пользователь.
+    QString AdditiveOperator;//сохраняет последний аддитивный оператор, по которому щелкнул пользователь.
     QString pendingMultiplicativeOperator;//сохраняет последний мультипликативный оператор, по которому щелкнул пользователь.
     bool waitingForOperand;// равен true когда калькулятор ожидает начала набора пользователем операнда.
 
     QLineEdit *display;
+
+    //history *h;
 
     enum { NumDigitButtons = 10 };//цифры
     Button *digitButtons[NumDigitButtons];//кнопки

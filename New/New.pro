@@ -27,12 +27,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     button.cpp \
-    calc.cpp
+    calc.cpp \
+    history.cpp
 
 HEADERS += \
         mainwindow.h \
     button.h \
-    calc.h
+    calc.h \
+    history.h
 
 FORMS += \
         mainwindow.ui
