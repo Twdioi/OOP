@@ -7,8 +7,10 @@
 #include <QPushButton>
 #include <QGridLayout>
 //#include "history.h"
+#include "calculator.h"
 
 class history;
+class calculator;
 
 class QLineEdit;
 
@@ -18,11 +20,19 @@ class screen : public QWidget
 
 public:
     screen(QWidget *parent = 0);
-    QPushButton* createButton (const QString& str);
+    QPushButton* createButton (const QString& str, const char *member);
 
     QString Button();
+    QString ClickOperator();
+    QString consider();
+
+    QString operator_text = "";
+    void setOperatorText(QString s);
+
+    QString getOperatorText();
 
     void output(double r);
+    bool waitingForOperand;
 
 
 //private slots:
@@ -34,17 +44,29 @@ public:
 //    void pointClicked();
 //    void changeSignClicked();
 //    void backspaceClicked();
-//    void clear();
+
+
+
 //    void clearAll();
 //    void trigonometricClicked();
 
 //    void historyClick();
  public slots:
   void slotButtonClicked();
+  void digit();
+  void click_oneClickOperator();
+  void click_trigonometricOperator();
+  void click_additiveOperation();
+  void click_multiplicativeOperation();
+  void clear();
+  void backspaceClicked();
+  void pointClicked();
+  void changeSignClicked();
+  void equalClicked();
 
+  void destv();
 
 private:
-   // Button *createButton(const QString &text, const char *member);
 //    void abortOperation();
 //    bool calculate(double rightOperand, const QString &pendingOperator);
 
@@ -58,10 +80,11 @@ private:
 //    double factorSoFar; // сохраняет временное значение при выполнении умножений и делений
 //    QString AdditiveOperator;//сохраняет последний аддитивный оператор, по которому щелкнул пользователь.
 //    QString pendingMultiplicativeOperator;//сохраняет последний мультипликативный оператор, по которому щелкнул пользователь.
-//    bool waitingForOperand;// равен true когда калькулятор ожидает начала набора пользователем операнда.
+   // bool waitingForOperand;// равен true когда калькулятор ожидает начала набора пользователем операнда.
 
     QLineEdit *display; //строка
     history *h;
+    calculator *c;
     QChar NumDigitButtons[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 };

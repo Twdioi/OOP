@@ -5,52 +5,43 @@
 
 #include <QWidget>
 
-class calc;
-
 class calculator
 {
 public:
     calculator();
 
-private:
+public:
     void digitClicked();
+    QString oneClickOperation(double& operand, QString& clickedOperator);
+    QString trigonometricOperation(double& operand, QString& clickedOperator);
+//    QString additiveOperation(double& operand, QString& clickedOperator, QString& pendingMulOp, QString& AddOp);
+//    QString multiplicativeOperation(double &operand, QString& clickedOperator, QString& pendingMulOp);
+//    QString equalOpetation(double& operand, QString& pendingMulOp, QString &AddOp);
+
+//    QString calculation(double& operand1,QString& clickedOperator,double& operand2);
 
 
-    QString But = c->Button();
-    void oneClickOperator();
-    void additiveOperatorClicked();
-    void multiplicativeOperatorClicked();
-    void equalClicked();
-    void pointClicked();
-    void changeSignClicked();
-    void backspaceClicked();
-    void clear();
-    void clearAll();
-    void trigonometricClicked();
+    QString additiveOperation(QString& clickedOperator);
+    QString multiplicativeOperation(QString& clickedOperator);
+    QString equalOpetation(double& operand);
 
-    void historyClick();
+    QString calculation(double &operand1, QString &clickedOperator, double &operand2);
 
-//private:
-    void abortOperation();
+
+private:
     bool calculate(double rightOperand, const QString &pendingOperator);
 
     //состояние калькулятора
-    double sumInMemory;
+
     double sumSoFar; //сохраняет суммарное значение всех
     //вводимых значений. Когда пользователь щелкает по =,
     //sumSoFar перерассчитывается и отображается на экране.
     //Clear All сбрасывает значение sumSoFar в ноль.
 
     double factorSoFar; // сохраняет временное значение при выполнении умножений и делений
-    QString AdditiveOperator;//сохраняет последний аддитивный оператор, по которому щелкнул пользователь.
-    QString pendingMultiplicativeOperator;//сохраняет последний мультипликативный оператор, по которому щелкнул пользователь.
-    bool waitingForOperand;// равен true когда калькулятор ожидает начала набора пользователем операнда.
+ QString AdditiveOperator;//сохраняет последний аддитивный оператор, по которому щелкнул пользователь.
+ QString pendingMultiplicativeOperator;//сохраняет последний мультипликативный оператор, по которому щелкнул пользователь.
 
-    enum { NumDigitButtons = 10 };//цифры
-   // Button *digitButtons[NumDigitButtons];//кнопки
-public:
-    screen *c;
-    history *h;
 
 
 
