@@ -2,7 +2,6 @@
 #include <cmath>
 #include "screen.h"
 #include"calculator.h"
-//#include "history.h"
 #include <QDebug>
 
 screen::screen(QWidget *parent)
@@ -28,7 +27,7 @@ screen::screen(QWidget *parent)
     //Начальная ячейка (row, column) растягивается на rowSpan строк и columnSpan столбцов.
 
     mainLayout->addWidget(createButton("backspace",SLOT(backspaceClicked())), 1, 0, 1, 2);
-   // mainLayout->addWidget(createButton("history",SLOT(slotButtonClicked())), 1, 2, 1, 2);
+
     mainLayout->addWidget(createButton("clear",SLOT(clear())), 1, 4, 1, 2);
 
     mainLayout->addWidget(createButton("exp",SLOT(click_oneClickOperator())), 2, 0);
@@ -39,22 +38,22 @@ screen::screen(QWidget *parent)
     for (int i = 1; i < 10; ++i) {
         int row = ((9 - i) / 3) + 2;
         int column = ((i - 1) % 3) + 1;
-        mainLayout->addWidget(createButton(NumDigitButtons[i] ,SLOT(digit())), row, column);
+        mainLayout->addWidget(createButton(NumDigitButtons[i] ,SLOT(click_digit())), row, column);
     }
 
-    mainLayout->addWidget(createButton(NumDigitButtons[0],SLOT(digit())), 5, 1);
+    mainLayout->addWidget(createButton(NumDigitButtons[0],SLOT(click_digit())), 5, 1);
     mainLayout->addWidget(createButton(".",SLOT(pointClicked())), 5, 2);
     mainLayout->addWidget(createButton("\302\261",SLOT(changeSignClicked())), 5, 3);
 
-    mainLayout->addWidget(createButton("/",SLOT(click_multiplicativeOperation())), 2, 4);
-    mainLayout->addWidget(createButton("*",SLOT(click_multiplicativeOperation())), 3, 4);
-    mainLayout->addWidget(createButton("-",SLOT(click_additiveOperation())), 4, 4);
-    mainLayout->addWidget(createButton("+",SLOT(dstv())), 5, 4);
+    mainLayout->addWidget(createButton("/",SLOT(click_binaryOperation())), 2, 4);
+    mainLayout->addWidget(createButton("*",SLOT(click_binaryOperation())), 3, 4);
+    mainLayout->addWidget(createButton("-",SLOT(click_binaryOperation())), 4, 4);
+    mainLayout->addWidget(createButton("+",SLOT(click_binaryOperation())), 5, 4);
 
     mainLayout->addWidget(createButton("sqrt",SLOT(click_oneClickOperator())), 2, 5);
     mainLayout->addWidget(createButton("x^2",SLOT(click_oneClickOperator())), 3, 5);
     mainLayout->addWidget(createButton("ln",SLOT(click_oneClickOperator())), 4, 5);
-    mainLayout->addWidget(createButton("=",SLOT(slotButtonClicked())), 5, 5);
+    mainLayout->addWidget(createButton("=",SLOT(equalClicked())), 5, 5);
     setLayout(mainLayout);
 
     setWindowTitle(tr("Calculator"));
@@ -65,18 +64,10 @@ screen::screen(QWidget *parent)
 QPushButton* screen::createButton (const QString& str,const char *member) {
  QPushButton* pcmd = new QPushButton(str);
  pcmd->setMinimumSize(20, 30);
- //connect(pcmd, SIGNAL(clicked()), this, SLOT(slotButtonClicked()));
  connect(pcmd, SIGNAL(clicked()), this, member);
  return pcmd;
 }
 
-
-                    //QString screen::Button()
-                    //{
-                    //    QPushButton *clickedButton = qobject_cast<QPushButton *>(sender()); //узнаем какая кнопка отправила сигнал
-                    //    int digitValue = clickedButton->text().toInt();//считывает значение
-                    //    return  QString::number(digitValue);
-                    //}
 
 QString screen::ClickOperator() // считывает какая кнопка подала сигнал
 {
@@ -84,115 +75,45 @@ QString screen::ClickOperator() // считывает какая кнопка п
     return (clickedButton->text());
 }
 
-//QString screen::consider() // считывает с экрана и преобраз в строку
-//{
-//    return display->text();
-//}
-
-//void screen::output(double r)
-//{
-//     display->setText(QString::number(r));
-//}
-
-//void screen::slotButtonClicked()
-//{
-//    QString str = ((QPushButton*)sender())->text(); //Получаем текст с нажатой кнопки
-//    operator_text = str;
-
-//    //operator_text = ((QPushButton*)sender())->text();
-
-//   // qDebug() << operator_text;
-////    setOperatorText(str) ;
-
-//    //qDebug()<< setOperatorText(str);
-////    qDebug() << getOperatorText();
-
-//}
-
-//void screen::setOperatorText(QString s)
-//{
-//    if (s == "")
-//     operator_text = s;
-//     //s = operator_text;
-//    // return operator_text;
-//}
-
-//QString screen:: getOperatorText()
-//{
-//    return operator_text;
-//}
-
 
 void screen::click_oneClickOperator()
 {
-                                             // ClickOperator();
    double operand = display->text().toDouble();
-   QString text = ClickOperator();                                                                 // r = c->oneClickOperator(operand, operator_text);
-   display->setText(c->oneClickOperation(operand,text));
+   QString text = ClickOperator();
+   display->setText(c.oneClickOperation(operand,text));
    waitingForOperand = true;
-                                                          // display->setText(c->oneClickOperator(operand,ClickOperator()));
-                                                           //display->setText(c->stroka(operator_text));
+
 }
-
-
-                                                            //void screen::digitClicked(/*QString str*/) //текст передача
-                                                            //{
-                                                            //   // QPushButton *clickedButton = qobject_cast<QPushButton *>(sender()); //узнаем какая кнопка отправила сигнал
-                                                            //    //int digitValue = clickedButton->text().toInt();//считывает значение
-                                                            //   // Button();
-                                                            //    display->setText(display->text() + Button()); // + новая цифра на экран
-                                                            //}
 
 void screen::click_trigonometricOperator()
 {
     double operand = display->text().toDouble();
     QString text = ClickOperator();
-    display->setText(c->trigonometricOperation(operand,text));
+    display->setText(c.trigonometricOperation(operand,text));
     waitingForOperand = true;
 }
 
-void screen::destv()
+
+void screen::click_binaryOperation()
 {
-    double operand1 = display->text().toDouble();
-   // display->setText(c->calculation(operand1,text = nullptr, operand2 = nullptr));
-   // display->clear();
+    double operand = display->text().toDouble();
+    c.operand1 = operand;
     QString text = ClickOperator();
-     double operand2 = display->text().toDouble();
-      display->setText(c->calculation(operand1,text , operand2));
-
+    c.clickedOperator = text;
+    display->clear();
 }
-
-//void screen::click_additiveOperation()
-//{
-//    double operand = display->text().toDouble();
-//   QString text_operation = ClickOperator();
-
-//    display->setText( c->additiveOperation(/*operand,*/ text_operation));
-//    waitingForOperand = true;
-//}
-
-//void screen::click_multiplicativeOperation()
-//{
-//    double operand = display->text().toDouble();
-// //  QString pendingMultiplicativeOperator = ClickOperator();
-//   QString text_operation = ClickOperator();
-//   display->setText( c->multiplicativeOperation(/*operand,*/ text_operation));
-//   waitingForOperand = true;
-//}
-
 
 void screen::equalClicked()
 {
-    double operand = display->text().toDouble();
-   // QString pendingMultiplicativeOperator = ClickOperator();
-   // QString additiveOperator = ClickOperator();
-    display->setText(c->equalOpetation(operand));
-    waitingForOperand = true;
+   double operand = display->text().toDouble();
+   c.operand2 = operand;
+   display->setText(c.equalOpetation());
+   waitingForOperand = true;
 }
 
 
 
-void screen::digit()
+void screen::click_digit()
 {
     int digitValue = ClickOperator().toInt();//считывает значение
 
@@ -225,15 +146,12 @@ void screen::pointClicked()
     if (waitingForOperand)
         display->setText("0");
     if (!display->text().contains('.')) // истина если выражение встречатеся в строке
-        display->setText(display->text() + tr("."));
+        display->setText(display->text() + ".");
     waitingForOperand = false;
 }
 
 void screen::clear() //сбрасывает значение текущего операнда в ноль
 {
-    if (waitingForOperand)
-        return ;
-
     display->setText("0");
     waitingForOperand = true;
 }
