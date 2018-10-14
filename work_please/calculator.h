@@ -13,9 +13,6 @@ public:
     void digitClicked();
     QString oneClickOperation(double& operand, QString& clickedOperator);
     QString trigonometricOperation(double& operand, QString& clickedOperator);
-    QString equalOpetation(double& operand);
-
-    QString calculation(QString &clickedOperator);
     QString equalOpetation();
 
     double operand1;

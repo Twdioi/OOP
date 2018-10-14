@@ -19,18 +19,7 @@ class screen : public QWidget
 public:
     screen(QWidget *parent = 0);
     QPushButton* createButton (const QString& str, const char *member);
-
-    QString Button();
     QString ClickOperator();
-    QString consider();
-    QString operator_text = "";
-    void setOperatorText(QString s);
-
-    QString getOperatorText();
-    void setOperands();
-
-    void output(double r);
-
 
  public slots:
   void click_digit();
